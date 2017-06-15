@@ -14,7 +14,7 @@ public class Client {
 
   public static Retrofit getClient() {
     if (retrofit == null) {
-      retrofit = new Retrofit.Builder().baseUrl("https://api.themoviedb.org/3/")
+      retrofit = new Retrofit.Builder().baseUrl("http://api.themoviedb.org/3/")
           .addConverterFactory(GsonConverterFactory.create()).build();
     }
     return retrofit;

@@ -6,11 +6,13 @@ import java.util.List;
 import com.cphs.moviez.R;
 import com.cphs.moviez.adapter.MovieAdapter;
 import com.cphs.moviez.databinding.ActivityMainBinding;
+import com.cphs.moviez.model.GridSpace;
 import com.cphs.moviez.model.Movie;
 import com.cphs.moviez.model.Page;
 import com.cphs.moviez.network.Client;
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
@@ -27,6 +29,7 @@ public class MainActivity extends AppCompatActivity {
   private List<Movie> mMovieList;
   private ActivityMainBinding mActivityMainBinding;
   private String apiKey = "3cf37d094a743461676900d353f57056";
+  private ProgressDialog mProgressDialog;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -34,9 +37,13 @@ public class MainActivity extends AppCompatActivity {
     mActivityMainBinding = DataBindingUtil.setContentView(this, R.layout.activity_main);
     mMovieList = new ArrayList<>();
     mMovieAdapter = new MovieAdapter(mMovieList, this);
+    mProgressDialog = new ProgressDialog(this);
+    mProgressDialog.setMessage("Please wait....");
 
     RecyclerView.LayoutManager layoutManager = new GridLayoutManager(this, 2);
+    GridSpace space = new GridSpace(4);
     mActivityMainBinding.rvMovies.setLayoutManager(layoutManager);
+    mActivityMainBinding.rvMovies.addItemDecoration(space);
     mActivityMainBinding.rvMovies.setAdapter(mMovieAdapter);
     mActivityMainBinding.rvMovies.setHasFixedSize(true);
 
@@ -44,16 +51,19 @@ public class MainActivity extends AppCompatActivity {
   }
 
   private void getPopular() {
+    mProgressDialog.show();
     Client.getService().getPopular(apiKey).enqueue(new Callback<Page>() {
       @Override
       public void onResponse(Call<Page> call, Response<Page> response) {
         if (response.isSuccessful()) {
           mMovieAdapter.setMovieList(response.body().getMovieList());
         }
+        mProgressDialog.dismiss();
       }
 
       @Override
       public void onFailure(Call<Page> call, Throwable t) {
+        mProgressDialog.dismiss();
         AlertDialog builder = new AlertDialog.Builder(MainActivity.this).setMessage(t.getMessage())
             .setPositiveButton("Reload", new DialogInterface.OnClickListener() {
               @Override
