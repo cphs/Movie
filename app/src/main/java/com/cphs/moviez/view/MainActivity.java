@@ -39,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
     mMovieAdapter = new MovieAdapter(mMovieList, this);
     mProgressDialog = new ProgressDialog(this);
     mProgressDialog.setMessage("Please wait....");
-
+    initToolbar();
     RecyclerView.LayoutManager layoutManager = new GridLayoutManager(this, 2);
     GridSpace space = new GridSpace(4);
     mActivityMainBinding.rvMovies.setLayoutManager(layoutManager);
@@ -48,6 +48,11 @@ public class MainActivity extends AppCompatActivity {
     mActivityMainBinding.rvMovies.setHasFixedSize(true);
 
     getPopular();
+  }
+
+  private void initToolbar() {
+    setSupportActionBar(mActivityMainBinding.tbCustom.toolbar);
+    getSupportActionBar().setTitle(getString(R.string.app_name));
   }
 
   private void getPopular() {

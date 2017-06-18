@@ -1,5 +1,6 @@
 package com.cphs.moviez.model;
 
+import java.io.Serializable;
 import java.util.List;
 
 import com.google.gson.annotations.Expose;
@@ -9,7 +10,7 @@ import com.google.gson.annotations.SerializedName;
  * Created by cesario.siringoringo on 14/06/2017.
  */
 
-public class Movie {
+public class Movie implements Serializable {
   @SerializedName("vote_count")
   @Expose
   private Integer voteCount;

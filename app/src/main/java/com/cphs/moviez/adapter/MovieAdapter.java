@@ -6,8 +6,10 @@ import com.bumptech.glide.Glide;
 import com.cphs.moviez.R;
 import com.cphs.moviez.databinding.MovieItemBinding;
 import com.cphs.moviez.model.Movie;
+import com.cphs.moviez.view.DetailActivity;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -41,14 +43,16 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
   }
 
   @Override
-  public void onBindViewHolder(ViewHolder holder, int position) {
+  public void onBindViewHolder(ViewHolder holder, final int position) {
     Glide.with(mActivity).load(mImageBaseUrl + mMovieList.get(position).getPosterPath())
         .centerCrop().fitCenter().dontAnimate().into(holder.getMovieItemBinding().imageView);
 
     holder.getMovieItemBinding().imageView.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
-
+        Intent i = new Intent(mActivity, DetailActivity.class);
+        i.putExtra("detail", mMovieList.get(position));
+        mActivity.startActivity(i);
       }
     });
   }
