@@ -3,6 +3,7 @@ package com.cphs.moviez.view;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.cphs.moviez.BuildConfig;
 import com.cphs.moviez.R;
 import com.cphs.moviez.adapter.MovieAdapter;
 import com.cphs.moviez.databinding.ActivityMainBinding;
@@ -14,6 +15,7 @@ import com.cphs.moviez.network.Client;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
+import android.content.res.Configuration;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -30,8 +32,8 @@ public class MainActivity extends AppCompatActivity {
   private MovieAdapter mMovieAdapter;
   private List<Movie> mMovieList;
   private ActivityMainBinding mActivityMainBinding;
-  private String apiKey = "YOUR_API_KEY";
   private ProgressDialog mProgressDialog;
+  private RecyclerView.LayoutManager layoutManager;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -42,9 +44,14 @@ public class MainActivity extends AppCompatActivity {
     mProgressDialog = new ProgressDialog(this);
     mProgressDialog.setMessage(getString(R.string.please_wait));
     initToolbar();
-    RecyclerView.LayoutManager layoutManager = new GridLayoutManager(this, 2);
+
+    if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+      mActivityMainBinding.rvMovies.setLayoutManager(new GridLayoutManager(this, 2));
+    } else if (getResources()
+        .getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+      mActivityMainBinding.rvMovies.setLayoutManager(new GridLayoutManager(this, 4));
+    }
     GridSpace space = new GridSpace(4);
-    mActivityMainBinding.rvMovies.setLayoutManager(layoutManager);
     mActivityMainBinding.rvMovies.addItemDecoration(space);
     mActivityMainBinding.rvMovies.setAdapter(mMovieAdapter);
     mActivityMainBinding.rvMovies.setHasFixedSize(true);
@@ -79,7 +86,7 @@ public class MainActivity extends AppCompatActivity {
 
   private void getPopular() {
     mProgressDialog.show();
-    Client.getService().getPopular(apiKey).enqueue(new Callback<Page>() {
+    Client.getService().getPopular(BuildConfig.API_KEY).enqueue(new Callback<Page>() {
       @Override
       public void onResponse(Call<Page> call, Response<Page> response) {
         if (response.isSuccessful()) {
@@ -91,7 +98,6 @@ public class MainActivity extends AppCompatActivity {
 
       @Override
       public void onFailure(Call<Page> call, Throwable t) {
-        mProgressDialog.dismiss();
         AlertDialog builder = new AlertDialog.Builder(MainActivity.this).setMessage(t.getMessage())
             .setPositiveButton("Reload", new DialogInterface.OnClickListener() {
               @Override
@@ -108,7 +114,7 @@ public class MainActivity extends AppCompatActivity {
 
   private void getTopRated() {
     mProgressDialog.show();
-    Client.getService().getTopRated(apiKey).enqueue(new Callback<Page>() {
+    Client.getService().getTopRated(BuildConfig.API_KEY).enqueue(new Callback<Page>() {
       @Override
       public void onResponse(Call<Page> call, Response<Page> response) {
         if (response.isSuccessful()) {
