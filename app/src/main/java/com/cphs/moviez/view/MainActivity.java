@@ -19,6 +19,8 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.Menu;
+import android.view.MenuItem;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -38,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
     mMovieList = new ArrayList<>();
     mMovieAdapter = new MovieAdapter(mMovieList, this);
     mProgressDialog = new ProgressDialog(this);
-    mProgressDialog.setMessage("Please wait....");
+    mProgressDialog.setMessage(getString(R.string.please_wait));
     initToolbar();
     RecyclerView.LayoutManager layoutManager = new GridLayoutManager(this, 2);
     GridSpace space = new GridSpace(4);
@@ -51,8 +53,28 @@ public class MainActivity extends AppCompatActivity {
   }
 
   private void initToolbar() {
-    setSupportActionBar(mActivityMainBinding.tbCustom.toolbar);
+    setSupportActionBar(mActivityMainBinding.toolbar);
     getSupportActionBar().setTitle(getString(R.string.app_name));
+  }
+
+  @Override
+  public boolean onCreateOptionsMenu(Menu menu) {
+    getMenuInflater().inflate(R.menu.main_menu, menu);
+    return true;
+  }
+
+  @Override
+  public boolean onOptionsItemSelected(MenuItem item) {
+    switch (item.getItemId()) {
+      case R.id.popular:
+        getPopular();
+        return true;
+      case R.id.top_rated:
+        getTopRated();
+        return true;
+      default:
+        return super.onOptionsItemSelected(item);
+    }
   }
 
   private void getPopular() {
@@ -61,6 +83,7 @@ public class MainActivity extends AppCompatActivity {
       @Override
       public void onResponse(Call<Page> call, Response<Page> response) {
         if (response.isSuccessful()) {
+          mActivityMainBinding.tvSortedBy.setText(R.string.popular);
           mMovieAdapter.setMovieList(response.body().getMovieList());
         }
         mProgressDialog.dismiss();
@@ -78,17 +101,21 @@ public class MainActivity extends AppCompatActivity {
               }
             }).create();
         builder.show();
+        mProgressDialog.dismiss();
       }
     });
   }
 
   private void getTopRated() {
+    mProgressDialog.show();
     Client.getService().getTopRated(apiKey).enqueue(new Callback<Page>() {
       @Override
       public void onResponse(Call<Page> call, Response<Page> response) {
         if (response.isSuccessful()) {
+          mActivityMainBinding.tvSortedBy.setText(R.string.top_rated);
           mMovieAdapter.setMovieList(response.body().getMovieList());
         }
+        mProgressDialog.dismiss();
       }
 
       @Override
@@ -102,6 +129,7 @@ public class MainActivity extends AppCompatActivity {
               }
             }).create();
         builder.show();
+        mProgressDialog.dismiss();
       }
     });
   }

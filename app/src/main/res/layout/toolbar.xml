@@ -9,6 +9,7 @@
         android:layout_height="wrap_content"
         android:background="#FF0000"
         android:minHeight="?attr/actionBarSize"
+        app:navigationIcon="@drawable/vector_back_arrow_white"
         app:titleTextColor="#FFFFFF"/>
 
 </layout>

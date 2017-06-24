@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
 
 public class DetailActivity extends AppCompatActivity {
   private ActivityDetailBinding mActivityDetailBinding;
@@ -33,6 +34,13 @@ public class DetailActivity extends AppCompatActivity {
 
   private void initToolbar() {
     setSupportActionBar(mActivityDetailBinding.tbCustom.toolbar);
+    mActivityDetailBinding.tbCustom.toolbar
+        .setNavigationOnClickListener(new View.OnClickListener() {
+          @Override
+          public void onClick(View v) {
+            finish();
+          }
+        });
     getSupportActionBar().setTitle(getString(R.string.app_name));
   }
 
