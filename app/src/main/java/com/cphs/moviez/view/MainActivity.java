@@ -30,7 +30,7 @@ public class MainActivity extends AppCompatActivity {
   private MovieAdapter mMovieAdapter;
   private List<Movie> mMovieList;
   private ActivityMainBinding mActivityMainBinding;
-  private String apiKey = "3cf37d094a743461676900d353f57056";
+  private String apiKey = "YOUR_API_KEY";
   private ProgressDialog mProgressDialog;
 
   @Override
