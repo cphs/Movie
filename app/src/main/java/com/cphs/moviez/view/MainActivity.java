@@ -24,9 +24,11 @@ import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
+import io.reactivex.Observer;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.annotations.NonNull;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 
 public class MainActivity extends AppCompatActivity {
   private MovieAdapter mMovieAdapter;
@@ -86,57 +88,77 @@ public class MainActivity extends AppCompatActivity {
 
   private void getPopular() {
     mProgressDialog.show();
-    Client.getService().getPopular(BuildConfig.API_KEY).enqueue(new Callback<Page>() {
-      @Override
-      public void onResponse(Call<Page> call, Response<Page> response) {
-        if (response.isSuccessful()) {
-          mActivityMainBinding.tvSortedBy.setText(R.string.popular);
-          mMovieAdapter.setMovieList(response.body().getMovieList());
-        }
-        mProgressDialog.dismiss();
-      }
+    Client.getService().getPopular(BuildConfig.API_KEY).subscribeOn(Schedulers.newThread())
+        .observeOn(AndroidSchedulers.mainThread()).subscribe(new Observer<Page>() {
+          @Override
+          public void onSubscribe(@NonNull Disposable d) {
+            // No implementation required
+          }
 
-      @Override
-      public void onFailure(Call<Page> call, Throwable t) {
-        AlertDialog builder = new AlertDialog.Builder(MainActivity.this).setMessage(t.getMessage())
-            .setPositiveButton("Reload", new DialogInterface.OnClickListener() {
-              @Override
-              public void onClick(DialogInterface dialog, int which) {
-                getPopular();
-                dialog.dismiss();
-              }
-            }).create();
-        builder.show();
-        mProgressDialog.dismiss();
-      }
-    });
+          @Override
+          public void onNext(@NonNull Page page) {
+            mActivityMainBinding.tvSortedBy.setText(R.string.popular);
+            mMovieAdapter.setMovieList(page.getMovieList());
+            mProgressDialog.dismiss();
+          }
+
+          @Override
+          public void onError(@NonNull Throwable e) {
+            AlertDialog builder =
+                new AlertDialog.Builder(MainActivity.this).setMessage(e.getMessage())
+                    .setPositiveButton("Reload", new DialogInterface.OnClickListener() {
+                      @Override
+                      public void onClick(DialogInterface dialog, int which) {
+                        getPopular();
+                        dialog.dismiss();
+                      }
+                    }).create();
+            builder.show();
+            mProgressDialog.dismiss();
+          }
+
+          @Override
+          public void onComplete() {
+            // No implementation required
+          }
+        });
   }
 
   private void getTopRated() {
     mProgressDialog.show();
-    Client.getService().getTopRated(BuildConfig.API_KEY).enqueue(new Callback<Page>() {
-      @Override
-      public void onResponse(Call<Page> call, Response<Page> response) {
-        if (response.isSuccessful()) {
-          mActivityMainBinding.tvSortedBy.setText(R.string.top_rated);
-          mMovieAdapter.setMovieList(response.body().getMovieList());
-        }
-        mProgressDialog.dismiss();
-      }
+    Client.getService().getTopRated(BuildConfig.API_KEY).observeOn(Schedulers.newThread())
+        .subscribeOn(AndroidSchedulers.mainThread()).subscribe(new Observer<Page>() {
+          @Override
+          public void onSubscribe(@NonNull Disposable d) {
+            // No implementation required
+          }
 
-      @Override
-      public void onFailure(Call<Page> call, Throwable t) {
-        AlertDialog builder = new AlertDialog.Builder(MainActivity.this).setMessage(t.getMessage())
-            .setPositiveButton("Reload", new DialogInterface.OnClickListener() {
-              @Override
-              public void onClick(DialogInterface dialog, int which) {
-                getPopular();
-                dialog.dismiss();
-              }
-            }).create();
-        builder.show();
-        mProgressDialog.dismiss();
-      }
-    });
+          @Override
+          public void onNext(@NonNull Page page) {
+            mActivityMainBinding.tvSortedBy.setText(R.string.top_rated);
+            mMovieAdapter.setMovieList(page.getMovieList());
+            mProgressDialog.dismiss();
+          }
+
+          @Override
+          public void onError(@NonNull Throwable e) {
+            AlertDialog builder =
+                new AlertDialog.Builder(MainActivity.this).setMessage(e.getMessage())
+                    .setPositiveButton("Reload", new DialogInterface.OnClickListener() {
+                      @Override
+                      public void onClick(DialogInterface dialog, int which) {
+                        getPopular();
+                        dialog.dismiss();
+                      }
+                    }).create();
+            builder.show();
+            mProgressDialog.dismiss();
+          }
+
+          @Override
+          public void onComplete() {
+            // No implementation required
+          }
+        });
   }
 }

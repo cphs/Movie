@@ -2,7 +2,7 @@ package com.cphs.moviez.api;
 
 import com.cphs.moviez.model.Page;
 
-import retrofit2.Call;
+import io.reactivex.Observable;
 import retrofit2.http.GET;
 import retrofit2.http.Query;
 
@@ -12,8 +12,8 @@ import retrofit2.http.Query;
 
 public interface API {
   @GET("movie/popular")
-  Call<Page> getPopular(@Query("api_key") String apiKey);
+  Observable<Page> getPopular(@Query("api_key") String apiKey);
 
   @GET("movie/top_rated")
-  Call<Page> getTopRated(@Query("api_key") String apiKey);
+  Observable<Page> getTopRated(@Query("api_key") String apiKey);
 }

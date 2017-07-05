@@ -3,6 +3,7 @@ package com.cphs.moviez.network;
 import com.cphs.moviez.api.API;
 
 import retrofit2.Retrofit;
+import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
@@ -15,6 +16,7 @@ public class Client {
   public static Retrofit getClient() {
     if (retrofit == null) {
       retrofit = new Retrofit.Builder().baseUrl("http://api.themoviedb.org/3/")
+          .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
           .addConverterFactory(GsonConverterFactory.create()).build();
     }
     return retrofit;
